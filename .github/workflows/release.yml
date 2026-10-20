@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: git diff --exit-code -- index.html
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run check
+      - name: Publish the release with the built guide
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" index.html share-image.png \
+            --title "US health insurance guide ${GITHUB_REF_NAME}" \
+            --notes "Built from ${GITHUB_SHA}. Open index.html in a browser, or read it at https://standardapplied.com/guides/us-health-insurance/"

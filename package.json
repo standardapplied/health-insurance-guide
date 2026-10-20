@@ -1,0 +1,17 @@
+{
+  "name": "health-insurance-guide",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An interactive, open-source field guide to US health insurance for people building healthcare software.",
+  "homepage": "https://standardapplied.com/guides/us-health-insurance/",
+  "repository": "github:standardapplied/health-insurance-guide",
+  "scripts": {
+    "build": "bun build.mjs && bun source/share.mjs",
+    "check": "bun qa/check.mjs",
+    "verify": "bun run build && bun run check"
+  },
+  "devDependencies": {
+    "playwright": "^1.58.0"
+  }
+}

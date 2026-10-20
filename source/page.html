@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="An interactive field guide to US health insurance for people building healthcare software: one member’s plan year, the four seats at the table, the money loop, how organizations connect and where software attaches."><meta name="theme-color" content="#fafbfc"><title>US health insurance · Standard Applied</title>__META__<style>__CSS__</style></head>
+<body>
+<a class="skip" href="#card">Skip to the guide</a>
+<header><a class="brand" href="https://standardapplied.com" aria-label="Standard Applied home"><svg class="brand-mark" aria-hidden="true" viewBox="0 0 100 100" width="28" height="28"><path d="M 80 28 L 14 28 L 50 58 L 14 88 L 80 88" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/><line x1="32" y1="8" x2="68" y2="8" stroke="var(--flare)" stroke-width="7" stroke-linecap="round"/></svg>STANDARD APPLIED</a><div class="reader-tools"><label class="technical-toggle header-toggle" title="Show transaction standards and codes where they apply"><input type="checkbox" id="technical"> Builder’s detail</label><button id="contents-open" type="button">Contents <span aria-hidden="true">☰</span></button><button id="fullscreen" type="button" aria-label="Enter fullscreen">Fullscreen <span aria-hidden="true">⛶</span></button></div></header>
+<main>
+<section class="hero book-page" id="cover" data-page-title="US health insurance" aria-labelledby="page-title">
+ <div class="cover-copy"><h1 id="page-title">US health<br><em>insurance.</em></h1><p class="lede">How care gets paid for in the United States.</p><p class="hero-note">An interactive field guide for people building software in US healthcare. Follow one member through a plan year, sit in each seat at the table, and find where your product attaches. Terms with a dotted underline open a definition.</p><div class="start-row"><a class="start" href="#card">Start reading <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></a><a class="start short" href="#card" data-route="short">The short route <small>6 pages · about 10 minutes</small></a></div><div class="cover-edition">OCTOBER 2026 · FIRST EDITION · <a href="https://github.com/standardapplied/health-insurance-guide" target="_blank" rel="noopener">OPEN SOURCE ↗</a></div></div>
+ <div class="cover-instrument instrument iso exchange-figure" data-theme="light"><div class="figure-top"><span>THE CLAIMS REGISTER</span><button class="quiet" id="motion-toggle" type="button" aria-pressed="false">Pause</button></div><div class="iso-stage">__FIGURE__</div><div class="flow-key"><div><i class="claim-key"></i><span>Claim card <b>From the provider</b></span></div><div><i class="remit-key"></i><span>Receipt <b>The remittance</b></span></div><div><i class="money-key"></i><span>Drawer <b>The funds</b></span></div></div><div class="exchange-status"><span id="exchange-phase">01 / CLAIM SUBMISSION</span><p id="exchange-copy">The provider submits the claim for review.</p></div><p class="exchange-caption">Information and money leave by different doors. The member’s explanation of benefits arrives separately.</p></div>
+</section>
+
+<section class="chapter book-page" id="card" data-page-title="The card" data-short="1" aria-labelledby="card-title">
+ <div class="part-label">PART I · ONE VISIT</div>
+ <div class="spread-grid">
+  <div class="spread-copy"><h2 id="card-title">Every field on the card is a key into a different system.</h2>
+   <p class="spread-lede">__PERSONA_INTRO__</p>
+   <p class="spread-lede">Each field is read by a different party and unlocks a different record. Select one to see who reads it and what it opens.</p>
+   <p class="builder"><span>For builders</span>Each field points at a system of record elsewhere: eligibility, the employer contract, the network, the PBM, the claims address. Treat the card as a set of foreign keys.</p>
+   <details class="evidence"><summary>Why we say this</summary><p>Self-funded plans cover 67% of workers with employer coverage, usually run by a national administrator under an administrative services agreement. The card carries the administrator’s brand in both arrangements. Pharmacy routing follows the NCPDP card standard; medical claims follow the payer ID.</p><p class="source-line">__CARD_SOURCES__</p></details>
+  </div>
+  <div class="spread-instrument"><div class="id-card" id="id-card" role="group" aria-label="Sample insurance card">__CARD__</div><div class="card-reading" id="card-reading" aria-live="polite"></div></div>
+ </div>
+</section>
+
+
+<section class="chapter book-page" id="cost" data-page-title="Cost sharing" data-short="2" aria-labelledby="cost-title">
+ <div class="part-label">PART I · ONE VISIT</div>
+ <div class="spread-grid">
+  <div class="spread-copy"><h2 id="cost-title">Seven words decide who pays what.</h2>
+   <p class="spread-lede">The premium keeps coverage in force and is paid whether or not care is used. Everything else on this page happens when care is used, in this order: the provider bills a charge, the plan recognizes an allowed amount, and the allowed amount is split between Maya and the plan by her deductible, her coinsurance and her out-of-pocket maximum.</p>
+   <p class="builder"><span>For builders</span>In Maya’s plan these seven values, and the running totals behind the deductible and the maximum, decide a single in-network claim. Real plans add copays, tiers, out-of-network rules and exclusions, but each estimate, EOB and remittance still applies rules like these to an allowed amount.</p>
+   <p class="tech"><span>Builder’s detail</span>The eligibility response (X12 271) carries the deductible and out-of-pocket amounts remaining; the remittance (835) carries the split with adjustment reason codes; the EOB restates it for the member.</p>
+   <details class="evidence"><summary>Sources</summary><p class="source-line">__COST_SOURCES__</p></details>
+  </div>
+  <div class="spread-instrument"><div class="instrument-card"><div class="figure-top"><span>ONE CLAIM, $1,000 ALLOWED</span><span>COINSURANCE 20%</span></div><div class="instrument-body one-claim">
+   <label for="one-deductible">Deductible remaining when the claim arrives <output id="one-deductible-value" for="one-deductible">$200</output></label><input id="one-deductible" type="range" min="0" max="2000" step="50" value="200"><div class="range-ends"><span>$0 · deductible met</span><span>$2,000 · nothing met yet</span></div>
+   <div class="split-bar big" role="img" aria-label=""><span id="one-member-bar"></span><span id="one-plan-bar"></span></div>
+   <div class="amounts"><div><span class="eyebrow">MAYA PAYS</span><strong id="one-member"></strong><small id="one-member-math"></small></div><div class="plan-amount"><span class="eyebrow">THE PLAN PAYS</span><strong id="one-plan"></strong><small>80% of what remains after the deductible</small></div></div>
+   <p class="calc-explainer" id="one-explainer"></p>
+   <p class="footnote">Billed charge for this claim: $3,000. The $2,000 difference is written off by the provider; see the bill. Assumes covered, in-network care with no copay and the out-of-pocket maximum unreached.</p>
+  </div></div>
+   <dl class="words">
+    <div><dt>Premium</dt><dd>What Maya and her employer pay each month for coverage. It never counts toward the limits below.</dd></div>
+    <div><dt>Allowed amount</dt><dd>The amount the plan recognizes for a service under its contract with the provider. Usually far below the billed charge.</dd></div>
+    <div><dt>Deductible</dt><dd>What Maya pays first each plan year, in full, until the total reaches $2,000. Then the plan starts sharing.</dd></div>
+    <div><dt>Coinsurance</dt><dd>After the deductible, Maya’s share of each allowed amount: 20%. The plan pays the other 80%.</dd></div>
+    <div><dt>Copay</dt><dd>A fixed amount for a visit or a prescription, when a plan uses them. Maya’s plan uses coinsurance alone, to keep the arithmetic in view.</dd></div>
+    <div><dt>Out-of-pocket maximum</dt><dd>The ceiling on what Maya pays in a plan year, $5,000. After it, the plan pays everything allowed.</dd></div>
+    <div><dt>Administrator and funder</dt><dd>The administrator runs the plan and prices the claims. The funder pays the plan’s share. In Maya’s plan they are two different organizations.</dd></div>
+   </dl>
+  </div>
+ </div>
+</section>
+
+<section class="chapter book-page" id="year" data-page-title="The plan year" data-short="3" aria-labelledby="year-title">
+ <div class="part-label">PART I · ONE VISIT</div>
+ <div class="spread-grid wide">
+  <div class="spread-copy"><h2 id="year-title">__YEAR_HEADLINE__</h2><p class="spread-lede story">__PERSONA_YEAR__</p><p class="spread-lede">__YEAR_LEDE__</p><p class="spread-lede">__YEAR_LEDE2__</p>
+   <p class="builder"><span>For builders</span>__YEAR_BUILDER__</p>
+   <p class="tech"><span>Builder’s detail</span>The 271 response reports “deductible remaining” and “out-of-pocket remaining” as of the inquiry; plans refresh these as claims adjudicate, so an estimate given before a pending claim posts can be wrong by that claim.</p>
+   <details class="evidence"><summary>Assumptions and sources</summary><p>Covered, in-network care; no copays; no other coverage; one member. Video therapy is allowed at $120 against a $180 charge, the MRI at $1,000 (facility $750, radiologist $250) against $3,000 billed, and the emergency visit at $2,600 (facility $2,200, physician $400) against $7,150 billed. The amounts are synthetic teaching values. One model computes every number on this page.</p><p class="source-line">__YEAR_SOURCES__</p></details>
+  </div>
+  <div class="spread-instrument"><div class="instrument-card"><div class="figure-top"><span>MAYA’S PLAN YEAR</span><span id="year-benefits">DEDUCTIBLE $2,000 · COINSURANCE 20% · OOP MAX $5,000</span></div><div class="instrument-body">
+   <div class="year"><div class="year-legend" role="list"><span role="listitem"><i class="mark therapy"></i>Video therapy, every month from January</span><span role="listitem"><i class="mark mri"></i>MRI, scheduled in <span id="legend-mri">March</span></span><span role="listitem"><i class="mark er"></i>Emergency visit, September</span><span class="legend-note">Each month shows what Maya paid, then what the plan paid.</span></div><div class="year-months" id="year-months" role="list"></div>
+   <div class="meters"><div class="meter"><label><span>Deductible met</span><output id="meter-deductible"></output></label><div class="bar"><span id="bar-deductible"></span></div></div><div class="meter"><label><span>Out-of-pocket spent</span><output id="meter-oop"></output></label><div class="bar"><span class="flare" id="bar-oop"></span></div></div></div>
+   <div class="year-controls"><div><label for="deductible">Deductible<output id="deductible-value" for="deductible">$2,000</output></label><input id="deductible" type="range" min="0" max="4000" step="250" value="2000"></div><div><label>When the MRI happens</label><div class="segmented small" role="group" aria-label="MRI month" id="mri-month"><button type="button" data-mri="2" aria-pressed="true">March</button><button type="button" data-mri="6" aria-pressed="false">July</button><button type="button" data-mri="10" aria-pressed="false">November</button></div></div></div>
+   <div class="year-totals"><div><strong id="total-billed"></strong><small>billed by providers</small></div><div><strong id="total-allowed"></strong><small>allowed by the plan</small></div><div class="flare"><strong id="total-member"></strong><small>paid by Maya</small></div><div><strong id="total-plan"></strong><small>paid by the employer plan</small></div></div>
+   <div class="calculator year-tray"><div class="calc-intro"><span class="eyebrow">THE MRI’S $1,000, AS FIFTY $20 COUNTERS</span><p id="calculation"></p></div><div class="calc-results"><div class="allocation-figure iso" data-theme="light"><div class="allocation-stage">__ALLOCATION_FIGURE__</div><div class="allocation-key"><span><i class="member-key"></i>Member</span><span><i class="money-key"></i>Plan</span></div></div><div class="amounts" aria-live="polite"><div><span class="eyebrow">MAYA PAYS</span><strong id="member-amount"></strong><small id="member-math"></small></div><div class="plan-amount"><span class="eyebrow" id="funding-label">THE EMPLOYER PLAN PAYS</span><strong id="plan-amount"></strong><small id="plan-math"></small></div></div></div></div>
+   </div></div></div></div>
+ </div>
+</section>
+
+<section class="chapter book-page" id="claim" data-page-title="One claim path" aria-labelledby="claim-title">
+ <div class="part-label">PART I · ONE VISIT</div>
+ <div class="section-heading"><h2 id="claim-title">Every encounter walks the same six stations.</h2><p>Three encounters, one path: eligibility, authorization, care, claim, adjudication and payment. Switch the encounter to see what changes at each station and what stays the same. Real workflows branch, repeat and run in parallel; the stations are the responsibilities.</p></div>
+ <p class="builder wide"><span>For builders</span>Each station is a system boundary with its own transaction, its own failure modes and its own buyer. Turn on Builder’s detail to see the transaction at each one.</p>
+ <div class="encounter-bar"><div class="segmented small" role="group" aria-label="Encounter" id="claim-encounter">__ENCOUNTER_BUTTONS__</div><button type="button" class="info-pop" id="encounter-info" aria-label="About this encounter"><span aria-hidden="true">i</span></button><p class="encounter-summary" id="encounter-summary"></p></div>
+ <div class="claim-controls"><div class="step-index" id="step-index">STEP 01 / 06</div><span class="key-hint">Builder’s detail shows the transaction codes</span></div>
+ <div class="claim-steps" role="group" aria-label="Claim stages">__STEP_BUTTONS__</div>
+ <div class="lifecycle-figure iso" data-theme="light"><div class="lifecycle-stage">__CLAIM_FIGURE__</div><div class="lifecycle-caption"><span>One ticket, six stations: scanner, stamp, pen, rollers, gauge, pay station</span><button id="claim-play" class="quiet" type="button" aria-pressed="false">Pause sequence</button></div></div><div class="claim-panel" aria-live="polite"><div class="claim-story"><span class="eyebrow" id="claim-artifact"></span><h3 id="claim-title-live"></h3><p id="claim-copy"></p><p class="source-line" id="claim-source"></p></div><div class="transaction-card"><div class="transaction-top"><span>FROM</span><span id="tx-from"></span></div><div class="transaction-rail"><span aria-hidden="true">↓</span><div id="tx-artifact"></div></div><div class="transaction-bottom"><span>TO</span><span id="tx-to"></span></div></div><div id="technical-panel" hidden><span class="technical-code" id="technical-code"></span><p id="technical-copy"></p></div></div>
+ <div class="step-actions"><button type="button" id="previous"><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>Previous</button><button type="button" id="next">Next step<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+ <details class="wide-detail"><summary>Rejections, denials and appeals</summary><div class="reference-grid"><div><h4>Rejection</h4><p>A submission can fail format, identification or other intake checks. The sender may need to correct it before processing can continue.</p></div><div><h4>Denial</h4><p>A claim decision can deny some or all benefits. The reason and applicable plan procedures determine what happens next.</p></div><div><h4>Correction or appeal</h4><p>Fixing claim information and challenging a benefit decision are different actions. Follow the plan’s instructions and deadlines.</p></div></div><p class="source-line">__CLAIM_DETAIL_SOURCES__</p></details>
+</section>
+
+<section class="chapter book-page" id="bill" data-page-title="The bill" data-short="4" aria-labelledby="bill-title">
+ <div class="part-label">PART I · ONE VISIT</div>
+ <div class="spread-grid">
+  <div class="spread-copy"><h2 id="bill-title">__WATERFALL_HEADLINE__</h2><p class="spread-lede">__WATERFALL_LEDE__</p><p class="spread-lede">__WATERFALL_LEDE2__</p>
+   <p class="builder"><span>For builders</span>__WATERFALL_BUILDER__</p>
+   <p class="tech"><span>Builder’s detail</span>On the 835 remittance the write-off appears as a contractual obligation adjustment (group code CO) with a reason code, and the member’s share as patient responsibility (group code PR). The billed amount is on the 837; the allowed amount is implied by payment plus adjustments.</p>
+   <details class="evidence"><summary>Why we say this</summary><p>The explanation of benefits shows the billed amount, the allowed amount, what the plan paid and what the member owes; the remittance to the provider carries the adjustment reasons. Hospitals must now publish their negotiated rates alongside their list charges, which shows the gap directly.</p><p class="source-line">__WATERFALL_SOURCES__</p></details>
+  </div>
+  <div class="spread-instrument"><div class="instrument-card"><div class="figure-top"><span>FROM CHARGE TO PAYMENT</span><div class="segmented small" role="group" aria-label="Encounter" id="bill-encounter"><button type="button" data-bill="therapy" aria-pressed="false">Therapy</button><button type="button" data-bill="mri" aria-pressed="true">MRI</button><button type="button" data-bill="er" aria-pressed="false">Emergency</button></div></div><div class="instrument-body"><div class="waterfall" id="waterfall" role="img" aria-label=""></div><p class="calc-explainer" id="bill-explainer"></p></div></div></div>
+ </div>
+</section>
+
+<section class="chapter book-page" id="seats" data-page-title="The table" data-short="5" aria-labelledby="seats-title">
+ <div class="part-label">PART II · WHO IS AT THE TABLE</div>
+ <div class="spread-grid">
+  <div class="spread-copy"><h2 id="seats-title">Three seats with different jobs, and a contract between each pair.</h2>
+   <p class="spread-lede">The member, with the employer behind them. The providers, in three shapes: a practice, a hospital and a therapist on a video call. The payer, often several companies under one brand. Between each pair sits a contract; information flows one way along it and money the other.</p>
+   <p class="spread-lede">Select a seat to see what it sends and receives. Three seats make five chapters: one for the member and employer, three for the provider shapes, one for the payer. Each answers the same six questions.</p>
+   <p class="builder"><span>For builders</span>Choose the seat first. A product that serves two seats serves two customers with opposed incentives, and its data model carries both views of the same claim.</p>
+  </div>
+  <div class="spread-instrument"><div class="instrument-card seats-figure"><div class="figure-top"><span>THE TABLE</span><span id="seat-name"></span></div><div class="instrument-body">__SEATS_FIGURE__<p class="calc-explainer" id="seat-copy"></p></div></div></div>
+ </div>
+</section>
+
+__SEAT_PAGES__
+
+<section class="chapter book-page" id="incentives" data-page-title="Why they behave this way" aria-labelledby="incentives-title">
+ <div class="part-label">PART II · WHO IS AT THE TABLE</div>
+ <div class="section-heading"><h2 id="incentives-title">Each party does what its contract pays it to do.</h2><p>__INCENTIVES_LEDE__</p></div>
+ <p class="builder wide"><span>For builders</span>A product that asks a party to act against its payment model is adopted slowly. A product that sits with the party whose incentive already points the right way, or that changes the payment model, has a chance.</p>
+ <div class="incentives">__INCENTIVES__</div>
+</section>
+
+<section class="chapter book-page" id="coverage" data-page-title="Who covers whom" aria-labelledby="coverage-title">
+ <div class="part-label">PART III · THE SHAPE OF THE SYSTEM</div>
+ <div class="spread-grid">
+  <div class="spread-copy"><h2 id="coverage-title">__COVERAGE_HEADLINE__</h2><p class="spread-lede">__COVERAGE_LEDE__</p>
+   <p class="builder"><span>For builders</span>__COVERAGE_BUILDER__</p>
+   <details class="evidence"><summary>Why we say this</summary><p>__COVERAGE_NOTE__ In 2026, 55% of eligible Medicare beneficiaries are in Medicare Advantage plans run by private insurers, 78% of Medicaid enrollees receive care through managed care organizations, and 23.1 million people selected Marketplace coverage. Private insurers therefore operate inside the public programs too.</p><p class="source-line">__COVERAGE_SOURCES__</p></details>
+  </div>
+  <div class="spread-instrument"><div class="shares">__SHARES__</div>
+   <div class="choice-row" role="group" aria-label="Coverage route">__COVERAGE_BUTTONS__</div><div class="coverage-panel compact" id="coverage-panel" aria-live="polite"></div></div>
+ </div>
+</section>
+
+<section class="chapter book-page" id="history" data-page-title="Why it looks this way" aria-labelledby="history-title">
+ <div class="part-label">PART III · THE SHAPE OF THE SYSTEM</div>
+ <div class="spread-grid">
+  <div class="spread-copy"><h2 id="history-title">__HISTORY_HEADLINE__</h2><p class="spread-lede">__HISTORY_LEDE__</p>
+   <p class="builder"><span>For builders</span>__HISTORY_BUILDER__</p>
+   <details class="evidence"><summary>Sources</summary><p class="source-line">__HISTORY_SOURCES__</p></details>
+  </div>
+  <div class="spread-instrument"><ol class="layers">__LAYERS__</ol></div>
+ </div>
+</section>
+
+<section class="chapter book-page" id="money" data-page-title="The money loop" aria-labelledby="money-title">
+ <div class="part-label">PART III · THE SHAPE OF THE SYSTEM</div>
+ <div class="spread-grid">
+  <div class="spread-copy"><h2 id="money-title">__MONEY_HEADLINE__</h2><p class="spread-lede">__MONEY_LEDE__</p><p class="spread-lede">__MONEY_LEDE2__</p>
+   <p class="builder"><span>For builders</span>__MONEY_BUILDER__</p>
+   <details class="evidence"><summary>Why we say this</summary><p class="source-line">__MONEY_SOURCES__</p></details>
+  </div>
+  <div class="spread-instrument"><div class="instrument-card pool-figure iso" data-theme="light"><div class="figure-top"><span>THE CISTERN</span><div class="segmented small" role="group" aria-label="Funding arrangement"><button type="button" data-funding="insured" aria-pressed="true">Fully insured</button><button type="button" data-funding="self" aria-pressed="false">Self-funded</button></div></div><div class="pool-stage iso-stage">__POOL_FIGURE__</div><div class="exchange-status"><span id="pool-phase">01 / PREMIUMS IN</span><p id="pool-copy"></p></div></div>
+   <div class="year-totals money-figures">__MONEY_FIGURES__</div></div>
+ </div>
+</section>
+
+<section class="chapter book-page" id="organizations" data-page-title="One name, several jobs" aria-labelledby="organizations-title">
+ <div class="part-label">PART IV · ONE NAME, SEVERAL JOBS</div>
+ <div class="section-heading"><h2 id="organizations-title">One brand can hold several seats.</h2><p>__ORG_LEDE__</p></div>
+ <p class="builder wide"><span>For builders</span>__ORG_BUILDER__</p>
+ <div class="choice-row" role="group" aria-label="Organization example">__MAP_BUTTONS__</div>
+ <div class="organization-panel"><div class="map-heading"><h3 id="map-title"></h3><button type="button" id="map-expand" class="quiet">Expand map ⤢</button><p id="map-intro"></p></div><div id="map-filters" class="map-filters" role="group" aria-label="Relationship type"></div><p id="map-filter-status" class="map-filter-status" aria-live="polite"></p><div id="map-diagram" class="map-diagram"></div><div id="mobile-relationships" class="mobile-relationships"></div><p class="map-legend" id="map-legend"></p><details class="map-notes"><summary>Relationship notes, other groups and BlueCard</summary><p id="map-details-intro"></p><div class="map-facts" id="map-facts"></div><p class="source-line" id="map-sources"></p><h4 class="other-companies-heading">Other company groups</h4><div class="reference-grid">__ORG_CARDS__</div><h4 class="other-companies-heading">The BlueCard program</h4><p>Independent Blue companies cooperate when a member receives care outside the Home Plan’s area. The Home Plan issues the policy; the Host Plan is local to the care. In the BCBS Kansas example, the provider submits locally, local pricing applies and the Home Plan decides benefits. Coverage follows the member’s product and the card’s instructions.</p><p class="source-line">__BLUECARD_SOURCE__</p>
+ <p class="footnote">Selected relationships from public filings and company websites. Business brands and regulated entities are labeled separately, and dates appear with their sources.</p>
+</details></div>
+</section>
+
+<section class="chapter book-page" id="seams" data-page-title="Where software attaches" data-short="6" aria-labelledby="seams-title">
+ <div class="part-label">PART V · WHERE SOFTWARE ATTACHES</div>
+ <div class="section-heading"><h2 id="seams-title">Nine seams, each with a buyer, a measure, a standard and a rule.</h2><p>__SEAMS_LEDE__</p></div>
+ <p class="builder wide"><span>For builders</span>__SEAMS_BUILDER__</p>
+ <div class="seams" role="group" aria-label="Seam">__SEAM_BUTTONS__</div>
+ <div class="seam-panel" id="seam-panel" aria-live="polite"></div>
+</section>
+
+<section class="chapter book-page buyers" id="buyers" data-page-title="Who buys, and when" aria-labelledby="buyers-title">
+ <div class="part-label">PART V · WHERE SOFTWARE ATTACHES</div>
+ <div class="section-heading"><h2 id="buyers-title">Each seat has a signer, a blocker and a calendar.</h2><p>__BUYERS_LEDE__</p></div>
+ <p class="builder wide"><span>For builders</span>__BUYERS_BUILDER__</p>
+ <table class="lob"><thead><tr><th>Seat</th><th>Who signs, who blocks</th><th>When</th></tr></thead><tbody>__BUYER_ROWS__</tbody></table>
+ <div class="calendar">__CALENDAR__</div>
+ <details class="evidence"><summary>Sources</summary><p class="source-line">__BUYERS_SOURCES__</p></details>
+</section>
+
+<section class="chapter book-page" id="privacy" data-page-title="Data and privacy" aria-labelledby="privacy-title">
+ <div class="part-label">PART V · WHERE SOFTWARE ATTACHES</div>
+ <div class="spread-grid wide">
+  <div class="spread-copy"><h2 id="privacy-title">Before data moves, each party has a legal role.</h2><p class="spread-lede">__PRIVACY_LEDE__</p>
+   <p class="builder"><span>For builders</span>__PRIVACY_BUILDER__</p>
+   <details class="evidence"><summary>Sources</summary><p class="source-line">__PRIVACY_SOURCES__</p></details>
+  </div>
+  <div class="spread-instrument"><div class="six privacy-grid">__PRIVACY__</div></div>
+ </div>
+</section>
+
+<section class="chapter book-page" id="building" data-page-title="Before an integration" aria-labelledby="building-title">
+ <div class="part-label">PART V · WHERE SOFTWARE ATTACHES</div>
+ <div class="section-heading"><h2 id="building-title">Four questions to settle before the first integration.</h2><p>__INTEGRATION_LEDE__</p></div>
+ <p class="builder wide"><span>For builders</span>Answer these in writing with the counterparties before the first test claim. Each one becomes a column, a state or a contract clause in the product.</p>
+ <ol class="integration-list">__INTEGRATION__</ol>
+ <p class="source-line">__INTEGRATION_SOURCES__</p>
+ <p class="footnote">Implementation guidance based on the responsibilities described in this guide. Specific trading-partner requirements must be checked for the actual product and transaction.</p>
+</section>
+
+<section class="chapter book-page" id="language" data-page-title="Insurance terms" aria-labelledby="language-title">
+ <div class="part-label">PART VI · REFERENCE</div>
+ <div class="section-heading"><h2 id="language-title">Insurance terms</h2><p>“Group” might mean an employer’s coverage group, a physician practice or a corporate family. “Payer” alone leaves several responsibilities unspecified. Each term links to its source.</p></div>
+ <div class="glossary-tools"><label for="term-search">Find a term<input id="term-search" type="search" placeholder="Try payer, chargemaster, carve-out or 837…"></label><span id="term-count" aria-live="polite"></span></div><div class="glossary" id="glossary">__GLOSSARY__</div><p id="no-terms" hidden>No matching terms. Try a shorter word or a different term.</p>
+</section>
+
+<section class="chapter sources book-page" id="sources" data-page-title="Sources and scope" aria-labelledby="sources-title"><div class="part-label">PART VI · REFERENCE</div><h2 id="sources-title">Sources and scope</h2><p class="source-intro">First edition · Sources checked October 19, 2026. This guide explains common arrangements and selected organizations for people building software. Maya and her plan are fictional; every amount is a synthetic teaching value. Organization examples come only from public filings, annual reports and company websites. For an individual claim or coverage decision, use the applicable plan documents and the member card’s instructions. Outside its scope: state-by-state rules, plan selection advice, complete subsidiary trees, detailed risk adjustment, dental and vision, workers’ compensation and the full appeals lifecycle.</p><p class="reviewers">Practitioner review: a payer operations review, a revenue cycle review and a behavioral health billing review are pending, and each reviewer will be credited here once complete. Source code and content are at <a href="https://github.com/standardapplied/health-insurance-guide" target="_blank" rel="noopener">github.com/standardapplied/health-insurance-guide ↗</a>; corrections with a primary source are welcome as issues or pull requests.</p><details open><summary>Primary sources</summary><ol>__SOURCES__</ol></details></section>
+</main><div class="book-navigation" aria-label="Page navigation"><button id="book-prev" type="button" aria-label="Previous page"><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><button id="book-position" type="button" aria-label="Open contents"><span id="book-page-number">01 / 23</span><span id="book-page-name">US health insurance</span><span id="book-route" hidden>SHORT ROUTE</span></button><div class="book-progress" aria-hidden="true"><span></span></div><span class="key-hint">Use arrow keys to turn pages</span><button id="book-next" type="button" aria-label="Next page"><svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>
+<dialog id="map-zoom" aria-labelledby="map-zoom-title"><div class="contents-heading"><h2 id="map-zoom-title">Company relationships</h2><button type="button" id="map-zoom-close" aria-label="Close enlarged map">×</button></div><div id="map-zoom-art"></div><p id="map-zoom-legend"></p></dialog>
+<dialog id="contents-dialog" aria-labelledby="contents-title"><div class="contents-heading"><h2 id="contents-title">Contents</h2><button id="contents-close" type="button" aria-label="Close contents">×</button></div><nav id="contents-list" aria-label="Table of contents"></nav><p class="route-row"><button type="button" id="route-short" class="quiet">Short route: 6 pages</button><button type="button" id="route-full" class="quiet">Read everything: 23 pages</button></p><p>Use the arrow keys or page controls on desktop. On smaller screens, scroll through the guide.</p></dialog>
+<div id="term-pop" class="term-pop" role="dialog" aria-live="polite" hidden><div class="term-pop-head"><b id="term-pop-title"></b><button type="button" id="term-pop-close" aria-label="Close definition">×</button></div><p id="term-pop-body"></p><a id="term-pop-link" href="#language">All terms →</a></div>
+<footer><span>Standard Applied · October 2026 · First edition</span><a href="https://github.com/standardapplied/health-insurance-guide" target="_blank" rel="noopener">Source and corrections ↗</a><a href="#cover">Back to cover ↑</a></footer>
+<noscript><div class="no-script">Enable JavaScript to explore the interactive examples. The glossary and source library remain available below.</div></noscript>
+<script>__DATA__</script><script>__APP__</script>
+</body></html>

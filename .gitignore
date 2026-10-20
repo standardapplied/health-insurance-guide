@@ -1,0 +1,7 @@
+node_modules/
+qa/shots/
+qa/checks.json
+qa/build.json
+share-image.html
+diagrams/
+.DS_Store

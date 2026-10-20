@@ -1,0 +1,39 @@
+// All figures use the same audited geometry and the article's financial model.
+// Animation shows responsibilities and sequence, not measured processing time.
+const coverRoot=$('.exchange-figure'),allocationRoot=$('.allocation-figure'),railRoot=$('.lifecycle-figure'),poolRoot=$('.pool-figure');
+function mover(root,vectors){const groups=Object.fromEntries(Object.keys(vectors).map(id=>[id,[...root.querySelectorAll(`[data-mover="${id}"]`)]]));return shares=>{for(const [id,els]of Object.entries(groups)){const p=shares[id]??0,[x,y]=vectors[id];for(const el of els)el.setAttribute('transform',`translate(${(x*p).toFixed(3)} ${(y*p).toFixed(3)})`);}};}
+const drawCover=mover(coverRoot,DATA.mechanisms.cover),drawAllocation=mover(allocationRoot,DATA.mechanisms.allocation),drawRail=mover(railRoot,DATA.mechanisms.claim),drawPool=mover(poolRoot,DATA.mechanisms.pool);
+const coverPackets=[...coverRoot.querySelectorAll('[data-mover]')];
+const counters=[...allocationRoot.querySelectorAll('[data-counter]')];
+let poolVisible=false,poolTime=still.matches?3.5:0,poolPhase=-1;
+let coverVisible=false,allocationVisible=false,railVisible=false,coverPaused=still.matches,coverTime=still.matches?9.5:0,coverPhase=-1;
+let railPlaying=!still.matches,railTime=0,railPosition=0,railTarget=0;
+let allocationPositions=Array(50).fill(0),allocationTargets=Array(50).fill(0),allocationMoving=true;
+let raf=0,previousTime=0;
+const phases=[['01 / CLAIM IN','The provider’s claim card goes into the slot.'],['02 / PRICED','The administrator prices it at the contracted amount and applies the benefits.'],['03 / RECEIPT AND DRAWER','The remittance prints; the money comes from the drawer. Two outputs from one claim.'],['04 / RECONCILED','The provider matches the receipt to the money. The member’s EOB arrives separately.']];
+const poolPhases={insured:[['01 / PREMIUMS IN','Employer and member contributions come down the chute into the insurer’s tank.'],['02 / THE LEVEL','The insurer holds the premium and carries the risk; the gauge shows the pool.'],['03 / CLAIMS OUT','Claim payments leave through the spout to the providers’ trough.'],['04 / RETAINED','At most 15 or 20 cents per dollar reaches the tray for administration and margin; the mark on the gauge is the loss-ratio floor.']],self:[['01 / CONTRIBUTIONS IN','Employer and member contributions come down the chute into the employer plan’s tank.'],['02 / THE LEVEL','The employer holds the money; stop-loss insurance covers the largest claims.'],['03 / CLAIMS OUT','The administrator pays claims from the employer’s funds.'],['04 / RETAINED','The administrator takes a fee per member. What remains stays with the employer, under ERISA fiduciary duties.']]};
+function poolPaint(){const pose=cisternPose(poolTime);drawPool(pose.shares);if(pose.phase!==poolPhase){poolPhase=pose.phase;const p=poolPhases[poolRoot.dataset.funding||'self'][pose.phase];$('#pool-phase').textContent=p[0];$('#pool-copy').textContent=p[1];}}
+document.addEventListener('funding-change',()=>{poolPhase=-1;poolPaint();});
+function coverPaint(){const pose=registerPose(coverTime);drawCover(pose.shares);coverPackets.forEach(g=>g.style.opacity=pose.opacity.toFixed(3));coverRoot.dataset.phase=String(pose.phase);if(pose.phase!==coverPhase){coverPhase=pose.phase;$('#exchange-phase').textContent=phases[pose.phase][0];$('#exchange-copy').textContent=phases[pose.phase][1];}}
+function allocationPaint(){drawAllocation(Object.fromEntries(allocationPositions.map((v,i)=>['counter'+i,v])));}
+function syncAllocation(r=allocate({deductibleRemaining:Number($('#deductible').value)*100})){const memberCount=Math.round(r.member/2000);allocationTargets=Array.from({length:50},(_,i)=>i<memberCount?1:0);counters.forEach(el=>{const i=Number(el.dataset.counter);el.dataset.owner=i<memberCount?'member':'plan';el.style.setProperty('--counter-delay',`${Math.min(i*7,160)}ms`);});allocationRoot.setAttribute('aria-label',`${memberCount} counters for the member, ${50-memberCount} for the plan. Each counter represents twenty dollars.`);if(still.matches){allocationPositions=[...allocationTargets];allocationPaint();}else allocationMoving=true;runAnimations();}
+function railLabels(){const stopped=!railPlaying||still.matches;$('#claim-play').textContent=stopped?'Play sequence':'Pause sequence';$('#claim-play').setAttribute('aria-pressed',String(!stopped));$('#claim-play').disabled=still.matches;$('.claim-panel').setAttribute('aria-live',stopped?'polite':'off');}
+function coverLabels(){$('#motion-toggle').textContent=coverPaused||still.matches?'Play':'Pause';$('#motion-toggle').setAttribute('aria-pressed',String(coverPaused||still.matches));$('#motion-toggle').disabled=still.matches;}
+function setRail(i){railTarget=i/5;railRoot.dataset.stage=String(i);railRoot.querySelectorAll('[data-station]').forEach(el=>el.dataset.active=String(Number(el.dataset.station)===i));if(still.matches){railPosition=railTarget;drawRail(linePose(railPosition).shares);}runAnimations();}
+function activeMotion(){return !still.matches&&!document.hidden&&(poolVisible||(coverVisible&&!coverPaused)||(allocationVisible&&allocationMoving)||(railVisible&&(railPlaying||Math.abs(railPosition-railTarget)>.0001)));}
+function animate(now){raf=0;if(!activeMotion()){previousTime=0;return;}const dt=previousTime?Math.min((now-previousTime)/1000,.05):0;previousTime=now;
+ if(coverVisible&&!coverPaused){coverTime+=dt;coverPaint();}
+ if(poolVisible){poolTime+=dt;poolPaint();}
+ if(allocationVisible&&allocationMoving){let gap=0;allocationPositions=allocationPositions.map((p,i)=>{const next=p+(allocationTargets[i]-p)*(1-Math.exp(-dt/0.19));gap=Math.max(gap,Math.abs(allocationTargets[i]-next));return next;});allocationMoving=gap>.0005;if(!allocationMoving)allocationPositions=[...allocationTargets];allocationPaint();}
+ if(railVisible){railPosition+=(railTarget-railPosition)*(1-Math.exp(-dt/.38));drawRail(linePose(railPosition).shares);if(railPlaying){railTime+=dt;if(railTime>=6){railTime=0;if(step<5)chooseStep(step+1);else{railPlaying=false;railLabels();}}}}
+ if(activeMotion())raf=requestAnimationFrame(animate);
+}
+function runAnimations(){if(!raf&&activeMotion()){previousTime=0;raf=requestAnimationFrame(animate);}}
+new IntersectionObserver(entries=>{for(const e of entries){if(e.target===coverRoot)coverVisible=e.isIntersecting;else if(e.target===allocationRoot)allocationVisible=e.isIntersecting;else if(e.target===railRoot)railVisible=e.isIntersecting;}runAnimations();},{threshold:.05}).observe(coverRoot);
+const otherObserver=new IntersectionObserver(entries=>{for(const e of entries){if(e.target===allocationRoot)allocationVisible=e.isIntersecting;else if(e.target===poolRoot)poolVisible=e.isIntersecting;else railVisible=e.isIntersecting;}runAnimations();},{threshold:.05});otherObserver.observe(allocationRoot);otherObserver.observe(railRoot);otherObserver.observe(poolRoot);
+$('#motion-toggle').addEventListener('click',()=>{coverPaused=!coverPaused;coverLabels();runAnimations();});
+$('#claim-play').addEventListener('click',()=>{railPlaying=!railPlaying;railTime=0;if(railPlaying&&step===5)chooseStep(0);railLabels();runAnimations();});
+$$('[data-step],#previous,#next').forEach(b=>b.addEventListener('click',()=>{railPlaying=false;railTime=0;railLabels();},true));
+document.addEventListener('allocation-change',e=>syncAllocation(e.detail));document.addEventListener('claim-stage',e=>setRail(e.detail));
+still.addEventListener('change',()=>{coverPaused=still.matches;railPlaying=false;if(still.matches){coverTime=9.5;coverPaint();poolTime=3.5;poolPaint();allocationPositions=[...allocationTargets];allocationPaint();railPosition=railTarget;drawRail(linePose(railPosition).shares);}coverLabels();railLabels();runAnimations();});document.addEventListener('visibilitychange',runAnimations);
+coverPaint();poolPaint();coverLabels();railLabels();setRail(0);syncAllocation();

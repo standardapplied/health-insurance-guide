@@ -1,0 +1,40 @@
+name: Source links
+
+on:
+  schedule:
+    - cron: '17 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Check every primary source URL
+        id: links
+        run: |
+          bun -e '
+            const {sources}=await import("./source/data.mjs");
+            const bad=[];
+            for(const [id,[who,title,url]] of Object.entries(sources)){
+              try{const r=await fetch(url,{method:"GET",redirect:"follow",headers:{"user-agent":"health-insurance-guide link check"}});if(!r.ok)bad.push(`- ${id}: ${r.status} ${url}`);}
+              catch(e){bad.push(`- ${id}: ${e.message} ${url}`);}
+            }
+            const fs=await import("node:fs");fs.writeFileSync("broken.md",bad.join("\n"));
+            console.log(bad.length?bad.join("\n"):"all sources resolve");
+          '
+      - name: Open an issue if any source failed
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -s broken.md ]; then
+            gh issue create --title "Source links to re-verify ($(date +%Y-%m-%d))" \
+              --body "$(printf 'These primary sources did not resolve in the monthly check. A failed link is a prompt to re-verify the fact and find the current page; a working link does not prove the fact is still true.\n\n%s' "$(cat broken.md)")" \
+              --label sources || true
+          fi

@@ -1,0 +1,33 @@
+name: Build and check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Build (runs the geometry audit)
+        run: bun run build
+      - name: Committed index.html must match the build
+        run: git diff --exit-code -- index.html
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+      - name: Check the built guide
+        run: bun run check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: |
+            qa/shots/
+            qa/checks.json
+            share-image.png
+          retention-days: 14
