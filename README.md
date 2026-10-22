@@ -6,6 +6,8 @@ An interactive, open-source guide to how US health insurance works, written for 
 
 **Or open it locally:** download `index.html` and open it in a browser. The file is self-contained: fonts, figures, data and scripts are embedded; only the source links need a connection.
 
+The copy on standardapplied.com counts page views with [Umami](https://umami.is), which sets no cookies and collects no personal information. The script only reports from standardapplied.com, so a downloaded copy sends nothing.
+
 ## What is in the guide
 
 - **One visit.** The insurance card field by field; the words on the card (premium, allowed amount, deductible, coinsurance, copay, out-of-pocket maximum, administrator versus funder) with a one-claim slider; Maya’s plan year, reflowing as you move the deductible or the MRI; one claim path through six stations for three encounters; and the bill as a waterfall from charge to write-off.
